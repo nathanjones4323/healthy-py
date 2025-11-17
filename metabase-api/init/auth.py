@@ -11,13 +11,14 @@ from db.utils import init_metabase_db_connection
 # Set the environment variables
 dotenv_path = os.path.join(os.path.dirname(__file__), '..', 'db', '.env')
 
-admin_creation_delay = 275
+admin_creation_delay = 300
 
 
 def is_initialized():
     try:
         conn = init_metabase_db_connection()
-        df = pd.read_sql("select * from report_card limit 1", conn)
+        df = pd.read_sql(
+            "select * from report_card where database_id != 1 limit 1", conn)
         if df.empty:
             logger.warning(
                 "Existing Metabase questions not found, initializing...")

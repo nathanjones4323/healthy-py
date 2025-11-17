@@ -1,37 +1,31 @@
-version: '3'
-
 services:
   db:
     container_name: postgis
     hostname: postgis
-    image: postgis
-    build:
-      context: ./db
-      dockerfile: Dockerfile
+    image: postgis/postgis:17-3.4
     env_file:
       - ./db/.env
-
     volumes:
       - postgis:/var/lib/postgis/data
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -q -d postgres -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -q -d postgres -U nathan"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   data-pipeline:
     image: data-pipeline
     container_name: data-pipeline
-    build: 
-      context: ./  # Build context is the current directory
+    build:
+      context: ./
       dockerfile: Dockerfile
-    command: ["python3", "main.py"]  # Command to run your Python script
     depends_on:
       db:
-        condition: service_healthy  # Wait for the db service to be healthy
-    
+        condition: service_healthy
+    command: ["python3", "main.py"]
+
   metabase-backend:
     image: metabase-backend
     container_name: metabase-backend
@@ -40,46 +34,49 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./metabase/backend/.env
-    volumes: 
+    volumes:
       - metabase-backend:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q -d postgres -U metabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     ports:
       - "1132:5432"
-  
+
   metabase:
-    image: metabase
+    image: metabase/metabase:v0.55.x
     container_name: metabase
-    build:
-      context: ./metabase
-      dockerfile: Dockerfile
+    env_file:
+      - ./metabase/.env
     volumes:
       - metabase:/metabase-data
     ports:
       - "3000:3000"
-    env_file:
-      ./metabase/.env
     depends_on:
-      - metabase-backend
-    
-  init-metabase-questions:
-    image: data-pipeline # This is the name of the image we built in the 1st step
-    container_name: init-metabase-questions
-    build: 
-      context: ./  # Build context is the current directory
+      metabase-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  init-metabase:
+    image: data-pipeline
+    container_name: init-metabase
+    build:
+      context: ./
       dockerfile: Dockerfile
-    # Need this such that the import statement `from db.utils import init_metabase_db_connection` works inside the container
     environment:
       - PYTHONPATH=/app
-    command: ["python3", "./metabase-api/main.py"]
     depends_on:
-      - metabase-backend
-    # Restart the container if it fails, but only try 3 times
+      metabase:
+        condition: service_healthy
+    command: ["python3", "./metabase-api/main.py"]
     restart: on-failure:3
-
 
 volumes:
   postgis:
-    name: postgis
   metabase-backend:
-    name: metabase-backend
   metabase:
-    name: metabase

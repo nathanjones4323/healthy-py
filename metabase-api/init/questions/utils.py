@@ -29,7 +29,7 @@ def set_visualization_settings(show_values: bool = True, x_axis_title: str = Non
     return visualization_settings
 
 
-def create_sql_question(mb: Metabase_API, query: str, display: str = "table", question_name: str = "test_card", db_id: int = 2, collection_id: int = 2, table_id: int = 48, visualization_settings: dict = None, timestamp_field_name: str = "created_at"):
+def create_sql_question(mb: Metabase_API, query: str, display: str = "table", question_name: str = "test_card", db_id: int = 2, collection_id: int = 4, table_id: int = 48, visualization_settings: dict = None, timestamp_field_name: str = "created_at"):
     try:
         # Parse the table name from the query
         table_name = query.split("from")[1].strip().split("\n")[0]
@@ -75,7 +75,7 @@ def create_sql_question(mb: Metabase_API, query: str, display: str = "table", qu
         logger.error(f"Could not create question - {question_name}\n{e}")
 
 
-def create_sql_timeseries_question(mb: Metabase_API, query: str, display: str = "table", question_name: str = "test_card", db_id: int = 2, collection_id: int = 2, table_id: int = 48, visualization_settings: dict = None):
+def create_sql_timeseries_question(mb: Metabase_API, query: str, display: str = "table", question_name: str = "test_card", db_id: int = 2, collection_id: int = 4, table_id: int = 48, visualization_settings: dict = None):
     try:
         # Parse the table name from the query
         table_name = query.split("from")[1].strip().split("\n")[0]

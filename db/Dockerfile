@@ -1,4 +1,4 @@
-FROM postgis/postgis:16-3.4
+FROM postgis/postgis:17
 
 LABEL description="A database to store your health data"
 
