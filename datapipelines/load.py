@@ -26,8 +26,9 @@ def load_apple_health_data(transformed_data, table_name="apple_health_activity_r
                 f"Skipping load for {table_name} - dataframe is None or empty")
             return
 
+        row_count = transformed_data.shape[0]
         logger.info(
-            f"Starting to load {transformed_data.shape[0]} rows into {table_name} table...")
+            f"Starting to load {row_count:,} rows into {table_name} table...")
 
         conn = init_db_connection()
         if conn is None:
@@ -35,14 +36,33 @@ def load_apple_health_data(transformed_data, table_name="apple_health_activity_r
                 f"Could not establish database connection for {table_name}")
             return
 
+        # Get the engine from the connection for better performance
+        engine = conn.engine
+
+        # For large datasets, use a larger chunksize and method='multi'
+        # method='multi' uses executemany() which is faster than individual inserts
+        # Larger chunksize reduces round trips but uses more memory
+        # Adaptive chunksize
+        chunksize = min(50000, max(10000, row_count // 20))
+
+        logger.info(f"Using chunksize of {chunksize:,} for loading...")
+
         # Write to Database with method='multi' for better performance on large datasets
-        transformed_data.to_sql(name=table_name, con=conn,
-                                schema="public", if_exists="replace", index_label="id",
-                                method='multi', chunksize=10000)
+        # Using engine directly allows better connection management
+        transformed_data.to_sql(
+            name=table_name,
+            con=engine,  # Use engine instead of connection for better performance
+            schema="public",
+            if_exists="replace",
+            index=False,  # Don't create index column if not needed (faster)
+            method='multi',
+            chunksize=chunksize
+        )
+
         # Close out DB connection
         conn.close()
         logger.success(
-            f"Loaded {transformed_data.shape[0]} rows of Apple Health data to DB into the {table_name} table")
+            f"Loaded {row_count:,} rows of Apple Health data to DB into the {table_name} table")
     except Exception as e:
         logger.error(
             f"Could not load Apple Health data to DB into the {table_name} table: {e}")
@@ -57,8 +77,9 @@ def load_strong_app_data(transformed_data):
                 "Skipping load for strong_app_raw - dataframe is None or empty")
             return
 
+        row_count = transformed_data.shape[0]
         logger.info(
-            f"Starting to load {transformed_data.shape[0]} rows into strong_app_raw table...")
+            f"Starting to load {row_count:,} rows into strong_app_raw table...")
 
         conn = init_db_connection()
         if conn is None:
@@ -66,14 +87,26 @@ def load_strong_app_data(transformed_data):
                 "Could not establish database connection for strong_app_raw")
             return
 
+        # Get the engine from the connection for better performance
+        engine = conn.engine
+
+        # Adaptive chunksize based on data size
+        chunksize = min(50000, max(10000, row_count // 20))
+
         # Write to Database with method='multi' for better performance
-        transformed_data.to_sql(name="strong_app_raw", con=conn,
-                                schema="public", if_exists="replace", index_label="id",
-                                method='multi', chunksize=10000)
+        transformed_data.to_sql(
+            name="strong_app_raw",
+            con=engine,  # Use engine instead of connection
+            schema="public",
+            if_exists="replace",
+            index=False,  # Don't create index column if not needed
+            method='multi',
+            chunksize=chunksize
+        )
         # Close out DB connection
         conn.close()
         logger.success(
-            f"Loaded {transformed_data.shape[0]} rows of Strong App data to DB")
+            f"Loaded {row_count:,} rows of Strong App data to DB")
     except Exception as e:
         logger.error(f"Could not load Strong App data to DB: {e}")
         import traceback
