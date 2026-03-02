@@ -1,9 +1,8 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=200px height=200px src="logo.png" alt="Project logo"></a>
-</p>
-
-<p align="center"> Analyze the health data from "all the things" in one place using Python, Docker, and Metabase.
+  <img width=200px height=200px src="logo.png" alt="Project logo"></a>
+  <br>
+  <i>Analyze the health data from "all the things" in one place using Python, Docker, and Metabase.</i>
 </p>
 
 ## 📝 Table of Contents
