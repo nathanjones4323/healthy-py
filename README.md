@@ -14,6 +14,7 @@
 ## 📝 Table of Contents
 
 - [About](#about)
+- [Dataflow](#dataflow)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting_started)
 - [Usage](#usage)
@@ -27,6 +28,42 @@ This is a full stack BI application powered by Python, Docker, and Metabase. It 
 
 - ⌚ [Apple Health Data](https://www.apple.com/ios/health/)
 - 🏋️ [Strong App](https://www.strong.app/)
+
+### Dataflow Diagram <a name = "dataflow"></a>
+
+```mermaid
+flowchart LR
+    subgraph Sources
+        A[Apple Health export<br/>XML, ECG CSV, GPX]
+        B[Strong App export<br/>strong.csv]
+    end
+
+    subgraph LocalData[Local data directory]
+        D[data/apple_health_export<br/>data/strong_export]
+    end
+
+    subgraph Pipeline[Python data pipeline]
+        E[Extract & transform\n(datapipelines/extract.py)]
+        F[Load to Postgres\n(datapipelines/load.py + db/synchronous.py)]
+    end
+
+    subgraph Warehouse[Analytics database]
+        G[(PostGIS db container)]
+    end
+
+    subgraph MetabaseStack[Metabase stack]
+        H[(Metabase backend DB)]
+        I[Metabase app\n(dashboards & questions)]
+        J[Init scripts\n(init-metabase)]
+    end
+
+    A --> D
+    B --> D
+    D --> E --> F --> G
+    G --> I
+    H <-- J --> I
+    User[(You in browser)] --> I
+```
 
 ### Roadmap Data Sources
 
