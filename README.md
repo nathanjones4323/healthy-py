@@ -3,8 +3,6 @@
  <img width=200px height=200px src="logo.png" alt="Project logo"></a>
 </p>
 
-<h3 align="center">healthy-py</h3>
-
 ---
 
 <p align="center"> Analyze the health data from "all the things" in one place using Python, Docker, and Metabase.
