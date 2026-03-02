@@ -2,11 +2,12 @@ services:
   db:
     container_name: postgis
     hostname: postgis
-    image: postgis/postgis:17-3.4
+    image: postgis/postgis:18-3.6
+    platform: linux/amd64
     env_file:
       - ./db/.env
     volumes:
-      - postgis:/var/lib/postgis/data
+      - /var/lib/postgresql
     ports:
       - "5432:5432"
     healthcheck:

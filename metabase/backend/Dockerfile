@@ -1,4 +1,4 @@
-FROM postgres:17
+FROM postgres:18.3
 
 LABEL description="This is the Metabase backend"
 
