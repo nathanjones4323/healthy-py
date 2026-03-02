@@ -35,41 +35,40 @@ This is a full stack BI application powered by Python, Docker, and Metabase. It 
 flowchart LR
 
     subgraph Sources
-        A[Apple Health export<br>XML, ECG CSV, GPX]
-        B[Strong App export<br>strong.csv]
+        A[Apple Health Export]
+        B[Strong App Export]
     end
 
-    subgraph LocalData
-        D[Local data directory<br>data/apple_health_export<br>data/strong_export]
+    subgraph Local_Data
+        C[Local Data Directory]
     end
 
-    subgraph Pipeline
-        E[Extract and transform<br>datapipelines/extract.py]
-        F[Load to Postgres<br>datapipelines/load.py<br>db/synchronous.py]
+    subgraph Python_Pipeline
+        D[Extract and Transform]
+        E[Load to Postgres]
     end
 
-    subgraph Warehouse
-        G[(PostGIS database<br>Docker container)]
+    subgraph Database
+        F[Postgres with PostGIS]
     end
 
-    subgraph MetabaseStack
-        H[(Metabase backend DB)]
-        I[Metabase app<br>Dashboards and questions]
-        J[Init scripts<br>init-metabase]
+    subgraph Metabase
+        G[Metabase Backend Database]
+        H[Metabase Application]
+        I[Initialization Scripts]
     end
 
-    U[User (browser)]
+    J[User Browser]
 
-    A --> D
-    B --> D
+    A --> C
+    B --> C
+    C --> D
     D --> E
     E --> F
-    F --> G
-    G --> I
+    F --> H
+    I --> G
+    G --> H
     J --> H
-    J --> I
-    H --> I
-    U --> I
 ```
 
 ### Roadmap Data Sources
