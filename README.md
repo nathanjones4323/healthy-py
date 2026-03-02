@@ -1,19 +1,14 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=200px height=200px src="logo.png" alt="Project logo"></a>
-</p>
-
-<h3 align="center">healthy-py</h3>
-
----
-
-<p align="center"> Analyze the health data from "all the things" in one place using Python, Docker, and Metabase.
-    <br> 
+  <img width=200px height=200px src="logo.png" alt="Project logo"></a>
+  <br>
+  <i>Analyze the health data from "all the things" in one place using Python, Docker, and Metabase.</i>
 </p>
 
 ## 📝 Table of Contents
 
 - [About](#about)
+- [Dataflow](#dataflow)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting_started)
 - [Usage](#usage)
@@ -27,6 +22,48 @@ This is a full stack BI application powered by Python, Docker, and Metabase. It 
 
 - ⌚ [Apple Health Data](https://www.apple.com/ios/health/)
 - 🏋️ [Strong App](https://www.strong.app/)
+
+### Dataflow Diagram <a name = "dataflow"></a>
+
+```mermaid
+flowchart LR
+
+    subgraph Sources
+        A[Apple Health Export]
+        B[Strong App Export]
+    end
+
+    subgraph Local_Data
+        C[Local Data Directory]
+    end
+
+    subgraph Python_Pipeline
+        D[Extract and Transform]
+        E[Load to Postgres]
+    end
+
+    subgraph Database
+        F[Postgres with PostGIS]
+    end
+
+    subgraph Metabase
+        G[Metabase Backend Database]
+        H[Metabase Application]
+        I[Initialization Scripts]
+    end
+
+    J[User Browser]
+
+    A --> C
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> H
+    I --> G
+    G --> H
+    J --> H
+```
 
 ### Roadmap Data Sources
 
