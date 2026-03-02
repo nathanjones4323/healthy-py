@@ -43,8 +43,8 @@ flowchart LR
     end
 
     subgraph Pipeline[Python data pipeline]
-        E[Extract & transform\n(datapipelines/extract.py)]
-        F[Load to Postgres\n(datapipelines/load.py + db/synchronous.py)]
+        E[Extract and transform<br/>(datapipelines/extract.py)]
+        F[Load to Postgres<br/>(datapipelines/load.py + db/synchronous.py)]
     end
 
     subgraph Warehouse[Analytics database]
@@ -53,8 +53,8 @@ flowchart LR
 
     subgraph MetabaseStack[Metabase stack]
         H[(Metabase backend DB)]
-        I[Metabase app\n(dashboards & questions)]
-        J[Init scripts\n(init-metabase)]
+        I[Metabase app<br/>(dashboards and questions)]
+        J[Init scripts<br/>(init-metabase)]
     end
 
     A --> D
