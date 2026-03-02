@@ -33,36 +33,43 @@ This is a full stack BI application powered by Python, Docker, and Metabase. It 
 
 ```mermaid
 flowchart LR
+
     subgraph Sources
-        A[Apple Health export<br/>XML, ECG CSV, GPX]
-        B[Strong App export<br/>strong.csv]
+        A[Apple Health export<br>XML, ECG CSV, GPX]
+        B[Strong App export<br>strong.csv]
     end
 
-    subgraph LocalData[Local data directory]
-        D[data/apple_health_export<br/>data/strong_export]
+    subgraph LocalData
+        D[Local data directory<br>data/apple_health_export<br>data/strong_export]
     end
 
-    subgraph Pipeline[Python data pipeline]
-        E[Extract and transform<br/>(datapipelines/extract.py)]
-        F[Load to Postgres<br/>(datapipelines/load.py + db/synchronous.py)]
+    subgraph Pipeline
+        E[Extract and transform<br>datapipelines/extract.py]
+        F[Load to Postgres<br>datapipelines/load.py<br>db/synchronous.py]
     end
 
-    subgraph Warehouse[Analytics database]
-        G[(PostGIS db container)]
+    subgraph Warehouse
+        G[(PostGIS database<br>Docker container)]
     end
 
-    subgraph MetabaseStack[Metabase stack]
+    subgraph MetabaseStack
         H[(Metabase backend DB)]
-        I[Metabase app<br/>(dashboards and questions)]
-        J[Init scripts<br/>(init-metabase)]
+        I[Metabase app<br>Dashboards and questions]
+        J[Init scripts<br>init-metabase]
     end
+
+    U[User (browser)]
 
     A --> D
     B --> D
-    D --> E --> F --> G
+    D --> E
+    E --> F
+    F --> G
     G --> I
-    H <-- J --> I
-    User[(You in browser)] --> I
+    J --> H
+    J --> I
+    H --> I
+    U --> I
 ```
 
 ### Roadmap Data Sources
